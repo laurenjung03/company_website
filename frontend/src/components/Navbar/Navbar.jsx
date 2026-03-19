@@ -6,7 +6,7 @@ import { HiX } from "react-icons/hi";
 const menuItems = [
   { path: "/", label: "홈" },
   { path: "/about", label: "회사정보" },
-  { path: "/leader", label: "임원소개" },
+  { path: "/leadership", label: "임원소개" },
   { path: "/board", label: "업무게시판" },
   { path: "/our-service", label: "제공기술" },
   { path: "/contact", label: "문의하기" },

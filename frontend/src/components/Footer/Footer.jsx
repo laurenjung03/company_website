@@ -8,7 +8,6 @@ import { FaXTwitter } from "react-icons/fa6";
 
 function Footer() {
   const scrolltoTop = () => {
-    alert("스크롤 함수가 실행되었다");
     window.scrollTo({ top: 0, behavior: smooth });
   };
 
@@ -50,7 +49,7 @@ function Footer() {
 
                 <li>
                   <Link
-                    to="/leader"
+                    to="/leadership"
                     onClick={scrolltoTop}
                     className="hover:text-white transition-colors"
                   >
@@ -69,7 +68,7 @@ function Footer() {
                 </li>
                 <li>
                   <Link
-                    to="/our-services"
+                    to="/our-service"
                     onClick={scrolltoTop}
                     className="hover:text-white transition-colors"
                   >
@@ -129,7 +128,7 @@ function Footer() {
             </div>
           </div>
         </div>
-        <div className="border-t border-gray-800 mt-8 pt-8 pb-8 mb-8 text-center text-gray-400">
+        <div className="border-t border-gray-800 mt-8 pt-8 pb-8  text-center text-gray-400">
           <p>&copy; 2026 ABC Company. All rights reserved</p>
         </div>
       </footer>
