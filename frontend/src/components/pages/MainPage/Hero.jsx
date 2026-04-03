@@ -19,7 +19,7 @@ function Hero() {
               함께합니다
             </p>
             {/* //버튼 추가영역 */}
-            <div className="flex gap-4 ">
+            <div className="flex gap-4 justify-center md:justify-start ">
               <button className="px-8 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-300 text-lg font-semibold shadow-xl hover:shadow-xl">
                 상담 신청하기
               </button>
