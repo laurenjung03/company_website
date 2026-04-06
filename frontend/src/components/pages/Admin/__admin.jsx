@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-function admin() {
+function __admin() {
   const [formData, setFormData] = useState({ username: "", password: "" });
 
   const [error, setError] = useState("");
@@ -42,4 +42,4 @@ function admin() {
   );
 }
 
-export default admin;
+export default __admin;
