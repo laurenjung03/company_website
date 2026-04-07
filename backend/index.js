@@ -12,6 +12,7 @@ const app = express();
 const PORT = 3000;
 
 const userRoutes = require("./routes/user");
+const contactRoutes = require("./routes/contact");
 
 app.use(
   cors({
@@ -25,6 +26,7 @@ app.use(express.urlencoded());
 app.use(cookieParser());
 
 app.use("/api/auth", userRoutes);
+app.use("/api/contact", contactRoutes);
 
 //엔드포인트 설정하기
 app.get("/", (req, res) => {
