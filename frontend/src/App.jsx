@@ -95,6 +95,7 @@ const Layout = () => {
     </>
   );
 };
+
 const AdminLayout = () => {
   return (
     <>

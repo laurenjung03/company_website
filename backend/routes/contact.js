@@ -32,7 +32,7 @@ router.post("/", async (req, res) => {
 });
 
 //관리자만 볼수있어야되므로 authenticateToken미들웨어 사용
-router.get("/", async (req, res) => {
+router.get("/", authenticateToken, async (req, res) => {
   try {
     //전체 목록 갖고오기
     const contacts = await Contact.find().sort({ createdAt: -1 });
@@ -58,6 +58,39 @@ router.get("/:id", async (req, res) => {
   }
 });
 
+router.put("/:id", async (req, res) => {
+  try {
+    const { status } = req.body;
+
+    //해당 문의글 찾기
+    const contact = await Contact.findByIdAndUpdate(
+      req.params.id,
+      { status },
+      { new: true },
+    );
+    if (!contact) {
+      res.status(404).json({ message: "문의를 찾을수없다" });
+    }
+    res.json({ message: "문의상태 수정이 성공했습니다", contact });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "서버에러가 발생했습니다" });
+  }
+});
+
+router.delete("/:id", async (req, res) => {
+  try {
+    //id로 문의글 찾은후 삭제
+    const contact = await Contact.findByIdAndDelete(req.params.id);
+    if (!contact) {
+      res.status(404).json({ message: "문의를 찾을수없다" });
+    }
+    res.json({ message: "문의가 성공적을 삭제됐습니다" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "서버에러가 발생했습니다" });
+  }
+});
 //문의글 볼수있는건 관리자만 -> 관리자 증명위해 토큰 검사
 //미들웨어사용할때는 next함수를 한번더 실행해야된다?
 
