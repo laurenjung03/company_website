@@ -12,7 +12,7 @@ const contactSchema = new mongoose.Schema(
       default: "in progress",
     },
     createdAt: { type: Date, default: Date.now },
-    updatedAt: { type: Date, default: Date.now() },
+    updatedAt: { type: Date, default: Date.now },
   },
   { timeStamps: true },
 );

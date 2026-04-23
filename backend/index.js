@@ -13,6 +13,8 @@ const PORT = 3000;
 
 const userRoutes = require("./routes/user");
 const contactRoutes = require("./routes/contact");
+const postRoutes = require("./routes/post");
+const uploadRoutes = require("./routes/upload");
 
 app.use(
   cors({
@@ -27,6 +29,8 @@ app.use(cookieParser());
 
 app.use("/api/auth", userRoutes);
 app.use("/api/contact", contactRoutes);
+app.use("/api/post", postRoutes);
+app.use("/api/upload", uploadRoutes);
 
 //엔드포인트 설정하기
 app.get("/", (req, res) => {
