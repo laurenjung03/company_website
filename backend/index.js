@@ -5,7 +5,7 @@ const cookieParser = require("cookie-parser");
 const cors = require("cors");
 
 const dns = require("dns");
-dns.setServers(["8.8.8.8", "8.8.4.4"]);
+// dns.setServers(["8.8.8.8", "8.8.4.4"]);
 
 const app = express();
 //express 라이브러리를 불러와서, 내 서버 객체(app)을 만드는 과정이다, 요리전 주방세팅 느낌
