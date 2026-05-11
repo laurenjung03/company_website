@@ -40,6 +40,8 @@ app.get("/", (req, res) => {
 //req:고객이 보낸 데이터, res: 내가 보낼 응답(결과물)
 //서버 실행: 서버가 계속 리스닝을 할수있도록
 
+console.log("연결하려는 URL:", process.env.MONGO_URI);
+
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => console.log("mongoDB와 연결 성공! "))
