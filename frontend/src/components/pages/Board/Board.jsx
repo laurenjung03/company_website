@@ -1,7 +1,10 @@
 import React from "react";
 import { useState, useEffect, useMemo } from "react";
 import axios from "axios";
+import { Link, useNavigate } from "react-router-dom";
+
 function Board() {
+  const navigate = useNavigate();
   //1.검색/필터링 관련
   const [posts, setPosts] = useState([]); //백엔드에서 받은 posts들(response데이터 저장)
 
@@ -18,7 +21,7 @@ function Board() {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/api/post");
+        const response = await axios.get("/api/post");
         setPosts(response.data);
       } catch (error) {
         console.log("게시글 가져오기 실패", error);
@@ -159,7 +162,11 @@ function Board() {
                 </tr>
               ) : (
                 paginatedPosts.map((item, index) => (
-                  <tr key={item._id} className="border-b text-sm">
+                  <tr
+                    key={item._id}
+                    className="border-b text-sm"
+                    onClick={() => navigate(`/post/${item._id}`)}
+                  >
                     <td className="px-4 py-3">
                       {(currentPage - 1) * pageSize + index + 1}
                     </td>
@@ -186,25 +193,27 @@ function Board() {
             </div>
           ) : (
             paginatedPosts.map((post, index) => (
-              <div
-                key={post._id}
-                className="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow"
-              >
-                <div className="flex justify-between items-center mb-2">
-                  <h3 className="text-xl 2xl:text-2xl font-bold mb-2 overflow-hidden overflow-ellipsis whitespace-nowrap">
-                    {post.title}
-                  </h3>
-                  <span className="text-sm text-gray-500">
-                    #{(currentPage - 1) * pageSize + index + 1}
-                  </span>
+              <Link to={`/post/${post._id}`} className="block">
+                <div
+                  key={post._id}
+                  className="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow"
+                >
+                  <div className="flex justify-between items-center mb-2">
+                    <h3 className="text-xl 2xl:text-2xl font-bold mb-2 overflow-hidden overflow-ellipsis whitespace-nowrap">
+                      {post.title}
+                    </h3>
+                    <span className="text-sm text-gray-500">
+                      #{(currentPage - 1) * pageSize + index + 1}
+                    </span>
+                  </div>
+                  <p className="text-sm text-gray-600 mb-3">
+                    작성일: {new Date(post.createdAt).toLocaleDateString()}
+                  </p>
+                  <p className="text-sm text-gray-600 mb-3">
+                    조회수 : {post.views}
+                  </p>
                 </div>
-                <p className="text-sm text-gray-600 mb-3">
-                  작성일: {new Date(post.createdAt).toLocaleDateString()}
-                </p>
-                <p className="text-sm text-gray-600 mb-3">
-                  조회수 : {post.views}
-                </p>
-              </div>
+              </Link>
             ))
           )}
         </div>

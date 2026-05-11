@@ -17,11 +17,9 @@ function __admin() {
     e.preventDefault();
 
     try {
-      const response = await axios.post(
-        "http://localhost:3000/api/auth/login",
-        formData,
-        { withCredentials: true },
-      );
+      const response = await axios.post("/api/auth/login", formData, {
+        withCredentials: true,
+      });
       if (response.data.user) {
         navigate("/admin/posts");
       }

@@ -10,8 +10,8 @@ function AdminEditPost() {
     title: "",
     content: "",
     // fileUrl: [],-- 화면에 fileUrl 표시할 필요가 없기떄문ㅇ ㅔ필요없음
-    fileList: [],
     files: [],
+    fileList: [],
     existingFiles: [],
   });
 
@@ -25,9 +25,15 @@ function AdminEditPost() {
   useEffect(() => {
     const fetchPost = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:3000/api/post/${id}`,
-        );
+        const response = await axios.get(`/api/post/${id}`);
+        /**
+         * setFormData({
+         * title:response.data.title,
+         * content:response.ata.content,
+         * files:[],
+         * fileList:[],
+         * existingFiles:response.data.fileUrl})
+         */
         setFormData({
           title: response.data.title,
           content: response.data.content,
@@ -36,7 +42,7 @@ function AdminEditPost() {
           existingFiles: response.data.fileUrl || [],
         });
       } catch (error) {
-        console.log("ㄱ게시물 가져오던 중에러발생", error);
+        console.log("게시물 가져오던 중에러발생", error);
         navigate("/admin/posts");
       }
     };
@@ -75,6 +81,7 @@ function AdminEditPost() {
     try {
       const imgRegex =
         /https:\/\/[^"']*?\.(?:png|jpg|jpeg|gif|PNG|JPG|JPEG|GIF)/g;
+      //const currentImages= editorContent.match(imgRegex)||[];
 
       const currentImages = editorContent.match(imgRegex) || [];
 
@@ -89,27 +96,21 @@ function AdminEditPost() {
           fileFormData.append("originalName", encodedFileName);
           //근데 왜 new FormData를 한건가, 우리가 저걸 정의한적이 있나. 그냥 상태 formData만 선언한거 아니엇다? 그리고 왜 append를 해야되는가
 
-          const response = await axios.post(
-            "http://localhost:3000/api/upload/file",
-            fileFormData,
-            {
-              withCredentials: true,
-              headers: {
-                "Content-Type": "multipart/form-data",
-                //그리고 설명에서, 바로 못올리고 우선 upload/file을 해야된다고 했는데, 그게 이게 파일.이미지여서 일단 s3에 저장해야돼서 그런건가
-                //그리고, 이렇게 되면 있는 사진과 파일이 함께 업로드되는거야? 우린 업로드 file,image따로 만들었던것같은데 왜 이렇게 하는건지
-              },
-              onUploadProgress: (progressEvent) => {
-                const percentCompleted = Math.round(
-                  (progressEvent.loaded * 100) / progressEvent.total,
-                );
-                setUploadProgress((prev) => ({
-                  ...prev,
-                  [file.name]: percentCompleted,
-                }));
-              },
+          const response = await axios.post("/api/upload/file", fileFormData, {
+            withCredentials: true,
+            headers: {
+              "Content-Type": "multipart/form-data",
             },
-          );
+            onUploadProgress: (progressEvent) => {
+              const percentCompleted = Math.round(
+                (progressEvent.loaded * 100) / progressEvent.total,
+              );
+              setUploadProgress((prev) => ({
+                ...prev,
+                [file.name]: percentCompleted,
+              }));
+            },
+          });
           return response.data.fileUrl;
         }),
       );
@@ -120,7 +121,7 @@ function AdminEditPost() {
         fileUrl: [...formData.existingFiles, ...uploadedFiles],
         currentImages: currentImages,
       };
-      await axios.put(`http://localhost:3000/api/post/${id}`, postData, {
+      await axios.put(`/api/post/${id}`, postData, {
         withCredentials: true,
         headers: { "Content-Type": "application/json" },
       });
@@ -197,7 +198,7 @@ function AdminEditPost() {
               onChange={(e) =>
                 setFormData({ ...formData, title: e.target.value })
               }
-              className="mt-1 block w-full rounded-lg border border-gray-300 shadow-sm focus:border-blue-500 text-base sm:text-lg py-2"
+              className="px-2 mt-1 block w-full rounded-lg border border-gray-300 shadow-sm focus:border-blue-500 text-base sm:text-lg py-2"
               required
             ></input>
           </div>
@@ -252,7 +253,7 @@ function AdminEditPost() {
                     formData.append("image", blobInfo.blob());
 
                     const response = await axios.post(
-                      "http://localhost:3000/api/upload/image",
+                      "/api/upload/image",
                       formData,
                       {
                         withCredentials: true,
@@ -371,7 +372,7 @@ function AdminEditPost() {
             {formData.fileList.length > 0 && (
               <div className="mt-4 space-y-2">
                 <p className="font-medium text-gray-700">
-                  새호 추가된 파일 목록:
+                  새로 추가된 파일 목록:
                 </p>
                 <ul className="bg-gray-50 rounded-lg divide-y divide-gray-200">
                   {formData.fileList.map((file) => (

@@ -38,7 +38,7 @@ function AdminPost() {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/api/post");
+        const response = await axios.get("/api/post");
         setPosts(response.data);
       } catch (error) {
         console.log("게시글 가져오기 실패", error);
@@ -61,9 +61,20 @@ function AdminPost() {
       cancelButtonText: "취소",
     });
 
+    /**const result= await Swal.fire({
+     * title:"삭제하시겠씁니다"
+     * 
+     * if(result.isConfirmed){
+     * try{
+     * await axios.delte(`http://localhost:3000/api/post/${id},{withCredentials:true})
+     * setPost(posts.filter((post)=>post._id !== id))
+     * Swal.fire("삭제완료","게시글삭제 ")
+     * }}
+    }) */
+
     if (result.isConfirmed) {
       try {
-        await axios.delete(`http://localhost:3000/api/post/${id}`, {
+        await axios.delete(`api/post/${id}`, {
           withCredentials: true,
         });
         setPosts(posts.filter((post) => post._id !== id));
@@ -174,8 +185,8 @@ function AdminPost() {
                     <td className="px-4 py-3 whitespace-nowrap">
                       {item.title}
                     </td>
-                    <td className="px-4 py-3 overflow-hidden overflow-ellipsis whitespace-nowrap  w-[15%]">
-                      {item.content}
+                    <td className="px-4 py-3 overflow-hidden overflow-ellipsis whitespace-nowrap max-w-50 truncate ">
+                      {item.content.replace(/<[^>]*>/g, "").slice(0, 50)}
                     </td>
                     <td className="px-4 py-3">{item.views}</td>
                     <td className="px-4 py-3">
@@ -263,7 +274,7 @@ function AdminPost() {
         </div>
 
         {/* //모바일 부분 */}
-        <div className="xl:hidden grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="md:hidden grid grid-cols-1 md:grid-cols-2 gap-4">
           {paginatedPosts.length === 0 ? (
             <div className="col-span-full p-8 text-center text-gray-500 bg-white rounded-lg shadow">
               게시글이 없습니다.

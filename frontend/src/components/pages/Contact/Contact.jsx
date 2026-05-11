@@ -22,10 +22,7 @@ function Contact() {
     e.preventDefault(); //특정 이벤트 발생시 방지
 
     try {
-      const response = await axios.post(
-        "http://localhost:3000/api/contact",
-        formData,
-      );
+      const response = await axios.post("/api/contact", formData);
       if (response.status === 201) {
         alert("문의가 성공적으로 작성됨");
       }

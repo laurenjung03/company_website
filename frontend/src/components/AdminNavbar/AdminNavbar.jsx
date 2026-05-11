@@ -12,7 +12,7 @@ function AdminNavbar() {
   const handleLogout = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/auth/logout",
+        "/api/auth/logout",
         {},
         { withCredentials: true },
       );

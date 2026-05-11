@@ -40,6 +40,10 @@ router.post("/", async (req, res) => {
     //가장 번호가 최신순으로 post정렬? 이거 왜하는거지 -> 해당 번호를 구해서 새로 생성하는 게시물 번호로 지정
     const nextNumber = latestPost ? latestPost.number + 1 : 1;
 
+    /**const latestPost= await Post.findOne().sort({number:-1});
+     * const nextNumber: latestPost? latestPost.number+1 : 1
+     */
+
     const post = new Post({
       number: nextNumber,
       title,
@@ -83,7 +87,7 @@ router.get("/:id", async (req, res) => {
     //헤더의 브라우저 정보
 
     //1일이 지나면, 조회수 오를수있도록
-    const oneDayAgo = new Date(Date.now() - 24 * 60 * 1000);
+    const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
     const hasRecentView = post.viewLogs.some(
       (log) =>
         log.ip === ip &&
@@ -100,8 +104,6 @@ router.get("/:id", async (req, res) => {
       await post.save();
     }
 
-    //**이미지,파일업로드 관련  */
-    // 마크다운-> html로 변환하기
     let htmlContent;
     try {
       htmlContent = marked.parse(post.content || "");
@@ -116,19 +118,6 @@ router.get("/:id", async (req, res) => {
     };
 
     res.json(responseData);
-    //
-
-    /**
-     * let htmlContent;
-     * try{
-     * htmlContent=marked.parse(post.content ||"")}
-     * catch(error){console.log(마크다운 오류)}
-     *
-     * const responseData={
-     * ...post.toOject(),
-     * renderedContent:htmlContent,
-     * }
-     */
   } catch (error) {
     res.status(500).json({ message: "서버오류발생" });
   }
@@ -142,7 +131,7 @@ router.put("/:id", async (req, res) => {
     if (!post) {
       return res.status(404).json({ message: "게시글을찾을수없음" });
     }
-    //**게시물 이미지 삭제되거나, 추가될경우 수정필요 */
+    //**게시물 이미지 삭제되거나, 추가될경우 수정필요-s3에서 지우거나 수정해야된다  */
 
     const imgRegex =
       /https:\/\/[^"']*?\.(?:png|jpg|jpeg|gif|PNG|JPG|JPEG|GIF)/g;
@@ -166,8 +155,11 @@ router.put("/:id", async (req, res) => {
         return null;
       }
 
-      /**const urlObj = new URL(url);
-       * return decodeURIComponent(urlObj.pathname.substring(1))
+      /**
+       * const getS3KeyFromUrl =(url)=>{
+       *const urlObj = new URL(url);
+       return decodeURIComponent(urlObj.pathname.subString())
+       * }
        */
     };
 

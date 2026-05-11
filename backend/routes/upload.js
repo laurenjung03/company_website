@@ -2,7 +2,7 @@ const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 //s3client,
 // putobjectcommand= 실제 업로드될때 사용되는 함수(s3에 파일을 실제로 넣는 명령서)-"이 파일을 저 버킷안에 넣어줘!"
 const multer = require("multer");
-//multer: 파일업로드 처리해주는 택배 분류 직원
+//multer: 파일업로드 처리해주는 택배 분류 직원(파일업로드를 처리해주는 택배 분류직원), 사용자가 웹에 파일올리면 서버가그냥 받을수없어 multer가 중간에서 "어디,"얼마나"를 정해준다
 //사용자가 웹에서 파일을 올리면, 서버가 그냥 받을수없음, multer가 중간에서 "어디에 저장할지, 크기크면 거절할지" 등 처리
 const { v4: uuidv4 } = require("uuid");
 const router = require("express").Router();
@@ -57,6 +57,7 @@ router.post(
         Body: file.buffer,
         ContentType: file.mimetype,
       };
+
       //3. 실제 업로드
       const command = new PutObjectCommand(uploadParams);
       await s3Client.send(command);
@@ -76,6 +77,8 @@ router.post(
   fileUpload.single("file"),
   async (req, res) => {
     try {
+      //1. 파일이름: 원본이름 유지
+
       const file = req.file;
       const originalName = req.body.originalName; // → "%EA%B3%A0%EC%96%91%EC%9D%B4%EC%82%AC%EC%A7%84.pdf"
       const decodedFileName = decodeURIComponent(originalName); // → "고양이사진.pdf"

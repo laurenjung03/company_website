@@ -27,7 +27,7 @@ function AdminContacts() {
       //여기에는 예전에 했던것처럼 const response를 해줄필요가 없다 왜죠? 그냥 불러온 문의글을 띄워주는 역할만 하니까?
       // 그리고 api통신할떄 프론트에서는 의례적으로 백에 정보 요청해서 받을떄 const response를 쓰는가?
       try {
-        const response = await axios.get("http://localhost:3000/api/contact", {
+        const response = await axios.get("/api/contact", {
           withCredentials: true,
         });
         setContacts(response.data);
@@ -76,7 +76,7 @@ function AdminContacts() {
   const handleStatusUpdate = async (newStatus) => {
     try {
       await axios.put(
-        `http://localhost:3000/api/contact/${selectedContact._id}`,
+        `/api/contact/${selectedContact._id}`,
         { status: newStatus },
         { withCredentials: true },
       );
@@ -110,7 +110,7 @@ function AdminContacts() {
     });
     if (result.isConfirmed) {
       try {
-        await axios.delete(`http://localhost:3000/api/contact/${id}`, {
+        await axios.delete(`/api/contact/${id}`, {
           withCredentials: true,
         });
         setContacts(contacts.filter((contact) => contact._id !== id));

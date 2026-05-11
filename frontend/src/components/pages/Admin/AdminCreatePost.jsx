@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Editor } from "@tinymce/tinymce-react";
@@ -9,8 +9,8 @@ function AdminCreatePost() {
     title: "",
     content: "",
     // fileUrl: [],-- 화면에 fileUrl 표시할 필요가 없기떄문ㅇ ㅔ필요없음
-    fileList: [],
-    files: [],
+    files: [], //실제 파일 객체-s3 업로드용
+    fileList: [], // 화면에 파일목록 렌더링용 객체 - 화면용
   });
   const editorRef = useRef(null);
 
@@ -63,37 +63,31 @@ function AdminCreatePost() {
           fileFormData.append("originalName", encodedFileName);
           //근데 왜 new FormData를 한건가, 우리가 저걸 정의한적이 있나. 그냥 상태 formData만 선언한거 아니엇다? 그리고 왜 append를 해야되는가
 
-          const response = await axios.post(
-            "http://localhost:3000/api/upload/file",
-            fileFormData,
-            {
-              withCredentials: true,
-              headers: {
-                "Content-Type": "multipart/form-data",
-                //그리고 설명에서, 바로 못올리고 우선 upload/file을 해야된다고 했는데, 그게 이게 파일.이미지여서 일단 s3에 저장해야돼서 그런건가
-                //그리고, 이렇게 되면 있는 사진과 파일이 함께 업로드되는거야? 우린 업로드 file,image따로 만들었던것같은데 왜 이렇게 하는건지
-              },
-              onUploadProgress: (progressEvent) => {
-                const percentCompleted = Math.round(
-                  (progressEvent.loaded * 100) / progressEvent.total,
-                );
-                setUploadProgress((prev) => ({
-                  ...prev,
-                  [file.name]: percentCompleted,
-                }));
-              },
+          const response = await axios.post("/api/upload/file", fileFormData, {
+            withCredentials: true,
+            headers: {
+              "Content-Type": "multipart/form-data",
             },
-          );
+            onUploadProgress: (progressEvent) => {
+              const percentCompleted = Math.round(
+                (progressEvent.loaded * 100) / progressEvent.total,
+              );
+              setUploadProgress((prev) => ({
+                ...prev,
+                [file.name]: percentCompleted,
+              }));
+            },
+          });
           return response.data.fileUrl;
         }),
       );
-      //promise가 끝났을떄
+      //promise가 끝났을떄, 게시물 업로드하기
       const postData = {
         title: formData.title,
         content: editorContent,
         fileUrl: uploadedFiles,
       };
-      await axios.post("http://localhost:3000/api/post", postData, {
+      await axios.post("/api/post", postData, {
         withCredentials: true,
         headers: { "Content-Type": "application/json" },
       });
@@ -104,9 +98,6 @@ function AdminCreatePost() {
       setShowUploadModal(false);
     }
   };
-  //->일단ㅇ 이렇게작성했는데 이제껏 작성했던 api호출과 다른 이유가 "s3에 저장해야되는 파일이 있어서 그런건가? "
-  //그래서 평소와 달리 uploadedFiles로 파일을 s3에 업로드 하는걸 하고 -> 그다음에 api post로 파일 포함한 전체 게시글 올리는건가?
-  //그리고 withCredentials 말고 headers 속성은 처음보는게 이건뭐야?
 
   const handleFileChange = (e) => {
     const newFiles = Array.from(e.target.files);
@@ -120,8 +111,8 @@ function AdminCreatePost() {
     }));
     setFormData((prev) => ({
       ...prev,
-      files: [...prev.files, ...newFiles],
-      fileList: [...prev.fileList, ...newFileList],
+      files: [...prev.files, ...newFiles], //실제 파일 객체
+      fileList: [...prev.fileList, ...newFileList], //화면 표시용 정보 객체
     }));
   };
 
@@ -134,7 +125,17 @@ function AdminCreatePost() {
       fileList: prev.fileList.filter((file) => file.id !== fileId),
     }));
   };
+  /**
+   * const handleFileDelete=(fileId)=>{
+   * setFormData((prev)=>{
+   *  ...prev,
+   * files:prev.files.filter((_, index)=> prev.fileList[index].id !== fileId),
+   * fileList: prev.fileList.filter((file)=>file.id !==fileId)
+   * })
+   * }
+   */
 
+  //파일 크기 구하는 함수
   const formatFileSize = (bytes) => {
     if (bytes === 0) return "0 bytes";
     const k = 1024;
@@ -142,6 +143,7 @@ function AdminCreatePost() {
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat(bytes / Math.pow(k, i).toFixed(2) + " " + size[i]);
   };
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8 ">
       <div className="bg-white rounded-lg shadow p-4 sm:p-8 ">
@@ -164,7 +166,7 @@ function AdminCreatePost() {
               onChange={(e) =>
                 setFormData({ ...formData, title: e.target.value })
               }
-              className="mt-1 block w-full rounded-lg border border-gray-300 shadow-sm focus:border-blue-500 text-base sm:text-lg py-2"
+              className="px-2 mt-1 block w-full rounded-lg border border-gray-300 shadow-sm focus:border-blue-500 text-base sm:text-lg py-2"
               required
             ></input>
           </div>
@@ -213,13 +215,14 @@ function AdminCreatePost() {
                   "image | help",
                 content_style:
                   "body { font-family:Helvetica,Arial,sans-serif; font-size:14px } @media (max-width: 768px) { body { font-size: 16px; } }",
+
                 images_upload_handler: async (blobInfo, progress) => {
                   try {
                     const formData = new FormData();
                     formData.append("image", blobInfo.blob());
 
                     const response = await axios.post(
-                      "http://localhost:3000/api/upload/image",
+                      "/api/upload/image",
                       formData,
                       {
                         withCredentials: true,

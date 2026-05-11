@@ -9,7 +9,7 @@ function Forum() {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/api/post");
+        const response = await axios.get("/api/post");
         setPosts(response.data.slice(0, 5));
       } catch (error) {
         console.log("게시글 로딩 실패");
@@ -69,7 +69,7 @@ function Forum() {
                 key={post._id}
                 className="border-b border-gray-100 last:border-b-0 hover:bg-blue-50 transition-colors duration-300"
               >
-                <Link to={`/board/${post._id}`} className="block">
+                <Link to={`/post/${post._id}`} className="block">
                   <div className="p-6 flex items-center jusify-between">
                     <div className="flex-1">
                       <div className="flex itmes-center gap-4 mb-2">

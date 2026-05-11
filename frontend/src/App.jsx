@@ -23,6 +23,7 @@ import AdminCreatePost from "./components/pages/Admin/AdminCreatePost";
 import AdminEditPost from "./components/pages/Admin/AdminEditPost";
 import AdminContacts from "./components/pages/Admin/AdminContacts";
 import AdminPost from "./components/pages/Admin/AdminPost";
+import SinglePost from "./components/pages/SinglePost/SinglePost";
 
 function AuthRedirectRoute() {
   const [isAuthenticated, setIsAuthenticated] = useState(null);
@@ -32,7 +33,7 @@ function AuthRedirectRoute() {
       //백으로 보내서 토큰이 유효한가 확인하기
       try {
         const response = await axios.post(
-          "http://localhost:3000/api/auth/verify-token",
+          "/api/auth/verify-token",
           {},
           { withCredentials: true },
         );
@@ -60,7 +61,7 @@ function ProtectedRoute() {
       //백으로 보내서 토큰이 유효한가 확인하기
       try {
         const response = await axios.post(
-          "http://localhost:3000/api/auth/verify-token",
+          "/api/auth/verify-token",
           {},
           { withCredentials: true },
         );
@@ -119,6 +120,7 @@ const router = createBrowserRouter([
       { path: "/our-service", element: <Services /> },
       { path: "/contact", element: <Contact /> },
       { path: "/leadership", element: <Leadership /> },
+      { path: "/post/:id", element: <SinglePost /> },
     ],
   },
   {
