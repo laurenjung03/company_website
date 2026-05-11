@@ -25,6 +25,10 @@ function AdminLogin() {
       const response = await axios.post("/api/auth/login", formData, {
         withCredentials: true,
       });
+
+      /**localstorage 저장 */
+      localStorage.setItem("token", response.data.token);
+
       if (response.data.user) {
         navigate("/admin/posts");
       }

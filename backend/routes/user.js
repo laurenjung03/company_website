@@ -105,7 +105,7 @@ router.post("/login", async (req, res) => {
     const userWithoutPassword = user.toObject();
     delete userWithoutPassword.password;
 
-    res.json({ user: userWithoutPassword });
+    res.json({ user: userWithoutPassword, token: token });
   } catch (error) {
     console.log("서버 오류발생했습니다", error.message);
     return res.status(401);
@@ -159,7 +159,7 @@ router.delete("/delete/:userId", async (req, res) => {
 
 //토큰 인증 관련 코드
 router.post("/verify-token", (req, res) => {
-  const token = req.cookies.token;
+  const token = req.cookies.token || req.headers.authorization?.split(" ")[1];
   if (!token) {
     return res.status(400).json({ isValid: false, message: "토큰이없습니다" });
   }
